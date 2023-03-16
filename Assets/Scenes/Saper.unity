@@ -249,8 +249,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5f8771ac2e5c764988e027d138a2e9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cellPrefab: {fileID: 1354873675601386842, guid: 135e319aacfbcce478ea564ee6a59e05, type: 3}
-  _bombPrefab: {fileID: 4908030463722397703, guid: 6e4e4654cd9cdb64bbdd069b7144579e, type: 3}
-  _columnCount: 5
-  _rowCount: 7
-  _bombProbability: 20
+  _emptyCellPrefab: {fileID: 1385112387269709565, guid: a60b86e6d5d2b904a82f15ec1842c0c8, type: 3}
+  _bombPrefab: {fileID: 3778870719565037516, guid: 6e4e4654cd9cdb64bbdd069b7144579e, type: 3}
+  _rowCount: 15
+  _columnCount: 30
+  _bombCount: 100
