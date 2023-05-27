@@ -7,14 +7,20 @@ using Random = System.Random;
 
 public class CellsLoader : MonoBehaviour
 {
-    [SerializeField] private EmptyCell _emptyCellPrefab;
+    [SerializeField] private NumberedCell numberedCellPrefab;
     [SerializeField] private BombCell _bombPrefab;
     [SerializeField] private int _rowCount;
     [SerializeField] private int _columnCount;
     [SerializeField] private int _bombCount;
 
+    /// <summary>
+    /// //////////////////////////////////////////////////
+    /// </summary>
+    [SerializeField] private Transform win;
+
     private Random _random;
     private BaseCell[,] _cells;
+    private int clickedSellsCount;
     
     private void Start()
     {
@@ -26,7 +32,7 @@ public class CellsLoader : MonoBehaviour
         SetPosition();
     }
     
-    private Vector3 Size => _emptyCellPrefab.transform.localScale;
+    private Vector3 Size => numberedCellPrefab.transform.localScale;
 
     private Vector3 GetCellPosition(int columnIndex, int rowIndex)
     {
@@ -44,8 +50,13 @@ public class CellsLoader : MonoBehaviour
         {
             for (int j = 0; j < _columnCount; j++)
             {
-                Vector3 position = GetCellPosition(j, i);
-                _cells[i, j] = Instantiate(_emptyCellPrefab, position, Quaternion.identity, transform);
+                var position = GetCellPosition(j, i);
+                var emptyCell = Instantiate(numberedCellPrefab, position, Quaternion.identity, transform);
+                
+                emptyCell.EmptyCellClicked += EmptyCellClicked;
+                emptyCell.CellClicked += CellClicked;
+                emptyCell.SetIndexes(i, j);
+                _cells[i, j] = emptyCell;
             }
         }
     }
@@ -65,6 +76,7 @@ public class CellsLoader : MonoBehaviour
 
             if (_cells[i, j] is BombCell) continue;
             
+            Destroy(_cells[i, j].gameObject);
             Vector3 position = GetCellPosition(j, i);
             _cells[i, j] = Instantiate(_bombPrefab, position, Quaternion.identity, transform);
             IterateBombNeighbourCells(j, i);
@@ -76,12 +88,50 @@ public class CellsLoader : MonoBehaviour
     {
         for (int i = rowIndex - 1; i <= rowIndex + 1; i++)
             for (int j = columnIndex - 1; j <= columnIndex + 1; j++)
-                if(IsIndexInRange(i, j) && _cells[i, j] is EmptyCell)
-                    (_cells[i, j] as EmptyCell).IterateCell();
+                if(IsIndexInRange(i, j) && _cells[i, j] is NumberedCell)
+                    (_cells[i, j] as NumberedCell).IterateCell();
     }
 
     private bool IsIndexInRange(int rowIndex, int columnIndex)
     {
         return rowIndex < _rowCount && rowIndex >= 0 && columnIndex < _columnCount && columnIndex >= 0;
+    }
+
+    private void EmptyCellClicked(int rowIndex, int columnIndex)
+    {
+        for (int i = rowIndex - 1; i <= rowIndex + 1; i++)
+            for (int j = columnIndex - 1; j <= columnIndex + 1; j++)
+                if(IsIndexInRange(i, j) && !_cells[i, j].IsPressed)
+                    (_cells[i, j] as NumberedCell).OnClick();
+    }
+
+    private int CellsCount => _rowCount * _columnCount - _bombCount;
+
+    private void CellClicked()
+    {
+        clickedSellsCount++;
+        if(clickedSellsCount == CellsCount) win.gameObject.SetActive(true);
+    }
+
+    public BaseCell GetCell(Vector3 mousePosition)
+    {
+        int x = (int) ((mousePosition.x) + _columnCount * 0.5f);
+        int y = (int) ((mousePosition.y) + _rowCount * 0.5f);
+        Debug.Log("x" + mousePosition.x + "y" + mousePosition.y);
+
+        // if (IsIndexInRange(x, y))
+        //      return _cells[y, x];
+        ////
+
+        //var r = Physics.Raycast(mousePosition, new Vector3(mousePosition.x, mousePosition.y, -10));
+        
+        
+
+
+
+
+
+        ////
+        return null;
     }
 }
